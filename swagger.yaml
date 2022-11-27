@@ -10,6 +10,8 @@ tags:
     description: Authorization operations
   - name: profile
     description: Operations about profile
+  - name: schedule
+    description: Operations about schedule
     
 paths:
   /auth/login:
@@ -100,7 +102,7 @@ paths:
           
   /profile/{ID}:
     get:
-      operationId: getProfileByUsernameOrID
+      operationId: getProfileByID
       tags:
         - profile
       summary: Get profile by ID
@@ -122,6 +124,31 @@ paths:
           description: Invalid ID or username supplied
         '404':
           description: Profile not found
+          
+  /schedule/{ID}:
+    get:
+      operationId: getScheduleByID
+      tags:
+        - schedule
+      summary: Get schedule by ID
+      parameters:
+        - name: ID
+          in: path
+          schema:
+            type: string
+          description: scheduleID = userID
+          required: true
+      responses:
+        '200':
+          description: Schedule found
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Schedule'
+        '400':
+          description: Invalid ID 
+        '404':
+          description: Schedule not found
   
 components:
   schemas:
@@ -153,8 +180,6 @@ components:
           type: string
         telegram:
           type: string
-        schedule_id:
-          type: integer
     
     Profiles:
       type: array
