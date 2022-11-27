@@ -1,0 +1,177 @@
+openapi: 3.0.3
+info: 
+  title: Безопасный кампус OpenApi спецификация
+  version: 0.0.1
+servers:
+  - url: http://localhost:8080/api/
+  
+tags:
+  - name: auth
+    description: Authorization operations
+  - name: profile
+    description: Operations about profile
+    
+paths:
+  /auth/login:
+    post:
+      tags:
+        - auth
+      summary: Logs user into the system
+      operationId: loginUser
+      requestBody:
+        content:
+          application/json:
+            schema:
+              type: object
+              properties:
+                username:
+                  type: string
+                password:
+                  type: string
+                  format: password
+        required: true
+      responses:
+        '204':
+          description: Successful operation
+        '400':
+          description: Invalid username or password supplied
+        '401':
+          description: Wrong password
+        '403':
+          description: You are already authorized. Log out first
+        '404':
+          description: User not found
+  
+  /auth/check:
+    get:
+      operationId: checkUserAuth
+      tags:
+        - auth
+      summary: Checks if current user is logged in
+      responses:
+        '204':
+          description: User is authorized
+        '401':
+          description: User is unauthorized
+  
+  /auth/logout:
+    post:
+      operationId: logoutUser
+      tags:
+        - auth
+      summary: Log out from current session
+      responses:
+        '204':
+          description: Logged out
+        '401':
+          description: User unauthorized
+          
+  /profiles:
+    get:
+      operationId: getProfiles
+      tags: 
+        - profile
+      summary: Get all profiles
+      responses:
+        '200':
+          description: Profiles found
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Profiles'
+        '401':
+          description: User unauthorized
+  
+  /profile:
+    get:
+      operationId: getSelfProfile
+      tags:
+        - profile
+      summary: Get profile of the current user
+      responses:
+        '200':
+          description: Profile found
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Profile'
+        '401':
+          description: User unauthorized
+          
+  /profile/{ID}:
+    get:
+      operationId: getProfileByUsernameOrID
+      tags:
+        - profile
+      summary: Get profile by ID
+      parameters:
+        - name: ID
+          in: path
+          schema:
+            type: string
+          description: That could be userID
+          required: true
+      responses:
+        '200':
+          description: Profile found
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Profile'
+        '400':
+          description: Invalid ID or username supplied
+        '404':
+          description: Profile not found
+  
+components:
+  schemas:
+    Profile:
+      type: object
+      properties:
+        ID:
+          type: integer
+        username:
+          type: string
+        firstName:
+          type: string
+        lastName:
+          type: string
+        role:
+          type: string
+          enum:
+            - admin
+            - user
+        receiving_notifications:
+          type: string
+          enum:
+            - telegram
+            - email
+            - telephone_number
+        telephone_number:
+          type: string
+        email:
+          type: string
+        telegram:
+          type: string
+        schedule_id:
+          type: integer
+    
+    Profiles:
+      type: array
+      items: 
+        $ref: '#/components/schemas/Profile'
+          
+    Schedule:
+      type: object
+      properties:
+        ID:
+          type: integer
+        start_at:
+          type: string
+          format: 2022-11-27 00:00:00
+        end_at:
+          type: string
+          format: 2022-11-27 00:00:00  
+          
+          
+        
